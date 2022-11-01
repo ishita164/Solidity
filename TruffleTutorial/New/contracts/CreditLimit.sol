@@ -1,0 +1,18 @@
+// SPDX-License-Identifier: GPL-3.0
+//Ishita More 2019130039
+
+pragma solidity 0.8.17;
+contract credict{
+
+    uint credit_limit;
+    uint given_credit_limit = 10000;
+
+    function amtrem(uint _personalexpense, uint _travelexpense, uint _stay) public {
+        credit_limit = given_credit_limit - _personalexpense - _travelexpense - _stay;
+    }
+
+    function finalresult() view public returns(uint){
+        return(credit_limit);
+    }
+
+}
