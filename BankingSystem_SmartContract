@@ -1,0 +1,63 @@
+// Ishita More 2019130039 BE-Comps
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+contract Bank_Smart_Contact{
+    mapping (address=>uint) private user;
+    address public manager;
+    uint private min_Balance;
+    uint private no_Cust;
+
+    
+    constructor() {
+        min_Balance = 1 wei;
+        manager = msg.sender;
+    }
+
+    modifier onlyManager(){
+        require (msg.sender==manager, "Only manager can access this function..");
+        _;
+    }
+    
+	function deposit() public payable{
+        require(msg.value >= min_Balance, "Does Not have Minimum Balance.");
+        if (user[msg.sender]==0){
+            no_Cust++;
+        }
+        user[msg.sender] += msg.value;
+    }
+
+    function check_Bank_Balance() public view onlyManager returns(uint){
+        return address(this).balance;
+    }
+
+    function No_Of_Active_Customers() public view onlyManager returns(uint){
+        return no_Cust;
+    }
+
+    function check_Balance() public view returns(uint){
+        return user[msg.sender];
+    }
+
+    function withdraw(uint amount) public{
+        require(user[msg.sender] - amount >= min_Balance, "Does Not have Minimum Balance.");
+        require(user[msg.sender] > 0, "Account not found");
+        require(amount>0, "Enter non-zero value for withdrawal");
+        user[msg.sender]=user[msg.sender]-amount;
+    }
+
+    function transfer(address _recipient, uint money) public{
+        require(user[msg.sender] - money >= min_Balance, "Does Not have Minimum Balance.");
+        address payable recipient = payable(_recipient);
+        recipient.transfer(money);
+        user[msg.sender] -= money;
+    }
+
+    function deleteAccount() public{
+        require(user[msg.sender] > 0, "Account not found");
+        address payable recipient = payable(msg.sender);
+        uint money = user[msg.sender];
+        recipient.transfer(money);
+        user[msg.sender] -= money;
+        no_Cust -= 1;
+    }
+}    
